@@ -6,11 +6,14 @@ import websocket
 import thread
 import time
 import os
+import json
 
 def on_message(ws, message):
     print "debug: called on_message"
-    os.system('./jsay' + message)
-    print message
+    json_obj = json.loads(message)
+    if json_obj["func"] == "play":
+       os.system((u'jsay.sh ' + json_obj["text"]).encode('utf_8'))
+    print json_obj["text"].encode('utf_8')
 
 def on_error(ws, error):
     print "debug: called on_error"
@@ -31,12 +34,10 @@ def on_open(ws):
 
     thread.start_new_thread(run, ())
 
-
-if __name__ == "__main__":
-
+def websocket_main():
     param = sys.argv
 
-    url = "wss://kumikomi-atk.c9users.io/websocket"
+    url = "wss://evening-tundra-11466.herokuapp.com"
 
     if len(param) == 2:
         url = param[1]
@@ -49,3 +50,6 @@ if __name__ == "__main__":
                               on_close = on_close)
     ws.on_open = on_open
     ws.run_forever()
+
+if __name__ == "__main__":
+    websocket_main()
